@@ -1,0 +1,32 @@
+name: Scrape podatke
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'   # svaka 4 sata
+  workflow_dispatch:          # ručno pokretanje dugmetom u UI-u
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instaliraj dependencies
+        run: pip install requests beautifulsoup4 # ili šta već koristiš
+
+      - name: Pokreni scraper
+        run: python scraper/scraper.py
+
+      - name: Commit i push JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/podaci.json
+          git diff --staged --quiet || git commit -m "Update: $(date +'%Y-%m-%d %H:%M')"
+          git push
