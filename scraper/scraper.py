@@ -16,9 +16,6 @@ from dataclasses import dataclass
 BASE_URL = "https://www.avto.net"
 SEARCH_URL = f"{BASE_URL}/Ads/results.asp"
 
-# VIEWPORTS sada dolaze iz stealth_manager-a
-VIEWPORTS = stealth_manager.VIEWPORTS
-
 FIELDNAMES = [
     'ID oglasa', 'ID vlasnika', 'Oglasivac', 'Opis', 'Cena', 'Datum obnove',
     'URL ka detaljnom oglasu', 'Marka', 'Model', 'URL glavne slike', 'Sve slike',
@@ -868,6 +865,9 @@ async def scrape_brand_with_model(
 
     return brand_ads
 
+
+# VIEWPORTS sada dolaze iz stealth_manager-a
+VIEWPORTS = stealth_manager.VIEWPORTS
 
 if __name__ == "__main__":
     # GitHub Actions / repository layout
