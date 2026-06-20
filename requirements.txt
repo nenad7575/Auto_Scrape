@@ -1,0 +1,13 @@
+httpx
+beautifulsoup4
+lxml
+playwright
+tf-playwright-stealth
+pandas
+openpyxl
+requests
+matplotlib
+seaborn
+numpy
+scipy
+
