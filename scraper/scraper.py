@@ -4,7 +4,7 @@ import random
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Callable
 from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
 # from config_loader import ScraperConfig, DEFAULT_MODELI
