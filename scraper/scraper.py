@@ -9,7 +9,7 @@ from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
 # from config_loader import ScraperConfig, DEFAULT_MODELI
 # from stealth_manager import stealth_manager
-from retry_decorator import retry_with_backoff
+# from retry_decorator import retry_with_backoff
 import unicodedata
 from dataclasses import dataclass
 
@@ -125,6 +125,52 @@ def remove_missing_ads(file_path: str, active_ids: set, today_str: str) -> None:
         print(f"  Obrisano {len(missing_ids)} oglasa iz {file_path}")
     else:
         print(f"  Nema oglasa za brisanje u {file_path}")
+
+
+def retry_with_backoff(max_retries: int = 3, base_delay: float = 10.0):
+    """
+    Decorator that retries an async function with exponential backoff.
+    
+    Args:
+        max_retries: Maximum number of retry attempts
+        base_delay: Base delay in seconds between retries (will be multiplied by 2^attempt)
+    
+    Example:
+        @retry_with_backoff(max_retries=3, base_delay=10)
+        async def fetch_data():
+            # Your async code here
+            pass
+    """
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            last_exception = None
+            
+            for attempt in range(max_retries):
+                try:
+                    return await func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    
+                    # Don't retry on the last attempt
+                    if attempt == max_retries - 1:
+                        logger.error(f"Function {func.__name__} failed after {max_retries} attempts: {e}")
+                        raise
+                    
+                    # Calculate backoff delay
+                    delay = base_delay * (2 ** attempt)
+                    logger.warning(
+                        f"Function {func.__name__} failed (attempt {attempt + 1}/{max_retries}): {e}. "
+                        f"Retrying in {delay} seconds..."
+                    )
+                    await asyncio.sleep(delay)
+            
+            # Should never reach here, but just in case
+            if last_exception:
+                raise last_exception
+                
+        return wrapper
+    return decorator
 
 
 def normalize(text):
