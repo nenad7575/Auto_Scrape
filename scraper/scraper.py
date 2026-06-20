@@ -4,13 +4,14 @@ import random
 import json
 import os
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from playwright.async_api import async_playwright
 from playwright_stealth import stealth_async
-from config_loader import ScraperConfig, DEFAULT_MODELI
-from stealth_manager import stealth_manager
+# from config_loader import ScraperConfig, DEFAULT_MODELI
+# from stealth_manager import stealth_manager
 from retry_decorator import retry_with_backoff
 import unicodedata
+from dataclasses import dataclass
 
 BASE_URL = "https://www.avto.net"
 SEARCH_URL = f"{BASE_URL}/Ads/results.asp"
@@ -27,6 +28,18 @@ FIELDNAMES = [
     'Datum skrejpa', 'Datum prodaje', 'Broj pregleda', 'Potrosnja', 'Emisijski razred', 'Boja', 'Enterijer', 'VIN'
 ]
 
+
+@dataclass
+class BrowserFingerprint:
+    """Represents a unique browser fingerprint."""
+    user_agent: str
+    viewport: Dict[str, int]
+    locale: str
+    timezone_id: str
+    device_scale_factor: float
+    has_touch: bool
+    is_mobile: bool
+    color_scheme: str
 
 @dataclass
 class ScraperConfig:
