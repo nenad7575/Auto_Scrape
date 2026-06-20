@@ -28,6 +28,30 @@ FIELDNAMES = [
 ]
 
 
+@dataclass
+class ScraperConfig:
+    """Konfiguraciona klasa za Avto.net skrejper."""
+    brands: Dict[str, Optional[List[str]]]
+    filters: Dict[str, int]
+    settings: Dict[str, Any]
+    
+    @classmethod
+    def from_json(cls, path: str) -> 'ScraperConfig':
+        """Učitava konfiguraciju iz JSON fajla sa validacijom."""
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Konfiguracioni fajl nije pronađen: {path}")
+        
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # Validacija strukture
+        brands = data.get('brands')
+        filters = data.get('filters', {})
+        settings = data.get('settings', {})
+        
+        # Default vrednosti za filters
+ 
+
 def load_json(filename: str) -> Dict:
     """
     Učitava JSON fajl. Ako fajl ne postoji, vraća osnovnu strukturu:
