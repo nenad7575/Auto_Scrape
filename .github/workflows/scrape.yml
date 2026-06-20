@@ -18,7 +18,7 @@ jobs:
           python-version: '3.11'
 
       - name: Instaliraj dependencies
-        run: pip install requests beautifulsoup4 # ili šta već koristiš
+        run: pip install -r requirements.txt # ili šta već koristiš
 
       - name: Pokreni scraper
         run: python scraper/scraper.py
