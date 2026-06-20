@@ -413,6 +413,13 @@ async def extract_price_avto(ad_element) -> Dict[str, Optional[str]]:
 
 
 @retry_with_backoff(max_retries=3, base_delay=10)
+async def scrape_avto_net(
+        config: Optional[ScraperConfig] = None,
+        config_path: str = "scraper/scraper_config.json",
+        output_file: str = "data/podaci.json",
+
+
+@retry_with_backoff(max_retries=3, base_delay=10)
 async def fetch_ad_details(context, ad: Dict) -> Optional[Dict]:
     """Otvara stranicu detalja oglasa i prikuplja dodatne informacije."""
     page = None
@@ -604,13 +611,6 @@ async def fetch_ad_details(context, ad: Dict) -> Optional[Dict]:
     finally:
         if page:
             await page.close()
-
-
-@retry_with_backoff(max_retries=3, base_delay=10)
-async def scrape_avto_net(
-        config: Optional[ScraperConfig] = None,
-        config_path: str = "scraper/scraper_config.json",
-        output_file: str = "data/podaci.json",
 
 
 ) -> List[Dict]:
