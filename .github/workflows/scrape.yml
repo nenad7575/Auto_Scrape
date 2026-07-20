@@ -1,0 +1,36 @@
+name: Polovni Scraper
+
+on:
+  schedule:
+    - cron: '0 8 * * *'        # Svaki dan u 8:00 UTC (10:00 po srpskom vremenu)
+  workflow_dispatch:           # Da možeš ručno da pokreneš
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Run Scraper
+        run: python scrape_prodato.py
+
+      - name: Upload JSON results
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-data
+          path: |
+            *.json
+            data/
