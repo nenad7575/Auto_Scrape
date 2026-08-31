@@ -41,3 +41,8 @@ jobs:
 
       - name: Run prodato.py
         run: xvfb-run python prodato.py
+
+      - name: Show results
+        run: |
+          ls -la
+          cat polovni_oglasi.json | head -50 || echo "JSON ne postoji"
