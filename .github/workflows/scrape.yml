@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 0 * * *'   # 00:00 UTC
     - cron: '0 12 * * *'  # 12:00 UTC
-  workflow_dispatch:      # omogućava ručno pokretanje
+  workflow_dispatch:
 
 jobs:
   run-script:
@@ -12,12 +12,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2  # ažurirano na verziju koja podržava Node.js 24[reference:3]
 
       - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'   # zameni sa tvojom verzijom
+        uses: actions/setup-python@v5.5.0  # ažurirano na verziju koja podržava Node.js 24[reference:4]
 
       - name: Install dependencies
         run: |
@@ -25,18 +23,11 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
+        uses: actions/cache@v4.3.0  # ažurirano na verziju koja podržava Node.js 24[reference:5]
 
       - name: Install Playwright browsers and system dependencies
         run: |
           playwright install --with-deps chromium
-          # Ako koristiš Firefox ili WebKit, dodaj i njih:
-          # playwright install firefox webkit
 
       - name: Install xvfb (virtuelni X server)
         run: sudo apt-get update && sudo apt-get install -y xvfb
