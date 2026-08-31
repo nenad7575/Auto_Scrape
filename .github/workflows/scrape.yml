@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 0 * * *'   # 00:00 UTC
     - cron: '0 12 * * *'  # 12:00 UTC
-  workflow_dispatch:      # ručno pokretanje
+  workflow_dispatch:      # omogućava ručno pokretanje
 
 jobs:
   run-script:
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'   # prilagodi svojoj verziji
+          python-version: '3.11'   # zameni sa tvojom verzijom
 
       - name: Install dependencies
         run: |
@@ -32,10 +32,14 @@ jobs:
           restore-keys: |
             playwright-${{ runner.os }}-
 
-      - name: Install Playwright browsers
+      - name: Install Playwright browsers and system dependencies
         run: |
           playwright install --with-deps chromium
-          # Ako koristiš i Firefox/WebKit, dodaj i njih
+          # Ako koristiš Firefox ili WebKit, dodaj i njih:
+          # playwright install firefox webkit
+
+      - name: Install xvfb (virtuelni X server)
+        run: sudo apt-get update && sudo apt-get install -y xvfb
 
       - name: Run prodato.py
-        run: python prodato.py
+        run: xvfb-run python prodato.py
