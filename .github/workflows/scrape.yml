@@ -1,36 +1,35 @@
-name: Polovni Scraper
+name: Run prodato.py
 
 on:
+  # Raspored: pokreći skriptu dva puta dnevno
   schedule:
-    - cron: '0 8 * * *'        # Svaki dan u 8:00 UTC (10:00 po srpskom vremenu)
-  workflow_dispatch:           # Da možeš ručno da pokreneš
+    # Prvi termin: u 00:00 UTC (srednja noć)
+    - cron: '0 0 * * *'
+    # Drugi termin: u 12:00 UTC (podne)
+    - cron: '0 12 * * *'
+  # Omogućava ručno pokretanje sa GitHub interfejsa, radi testiranja
+  workflow_dispatch:
 
 jobs:
-  scrape:
+  run-script:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'  # Ovde stavi verziju koju koristiš (npr. 3.9, 3.10...)
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          playwright install chromium --with-deps
+          # Ako imaš requirements.txt fajl, instaliraj sve zavisnosti odjednom
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Ako nemaš, ovde možeš dodati i pojedinačne komande za instalaciju
+          # npr: pip install pandas openpyxl
 
-      - name: Run Scraper
+      - name: Run prodato.py
         run: python prodato.py
-
-      - name: Upload JSON results
-        uses: actions/upload-artifact@v4
-        with:
-          name: scraped-data
-          path: |
-            *.json
-            data/
