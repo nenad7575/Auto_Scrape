@@ -2,32 +2,35 @@ name: Run prodato.py
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # 08:00 po srpskom vremenu (UTC+2)
-    - cron: '0 14 * * *'  # 16:00 po srpskom vremenu
-  workflow_dispatch:        # omogućava i ručno pokretanje sa GitHub-a
+    - cron: '0 0 * * *'
+    - cron: '0 12 * * *'
+  workflow_dispatch:
 
 jobs:
-  run-scraper:
+  run-script:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'   # zameni sa tvojom verzijom
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          # Ako nemaš requirements.txt, dodaj i playwright:
+          # pip install playwright
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium   # instalira samo Chromium (može i --with-deps)
+          # Ako koristiš i Firefox ili WebKit, dodaj i njih:
+          # playwright install firefox webkit
 
       - name: Run prodato.py
         run: python prodato.py
-
-      - name: Commit changes (ako skripta menja fajlove u repou)
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --staged --quiet || git commit -m "Automatski update: prodato.py $(date -u +'%Y-%m-%d %H:%M UTC')"
-          git push
