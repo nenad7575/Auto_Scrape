@@ -12,10 +12,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2  # ažurirano na verziju koja podržava Node.js 24[reference:3]
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5.5.0  # ažurirano na verziju koja podržava Node.js 24[reference:4]
+        uses: actions/setup-python@v5.5.0
+        with:
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -23,7 +25,12 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v4.3.0  # ažurirano na verziju koja podržava Node.js 24[reference:5]
+        uses: actions/cache@v4.3.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
 
       - name: Install Playwright browsers and system dependencies
         run: |
