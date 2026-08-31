@@ -537,10 +537,11 @@ async def scrape_prodato_async():
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-            headless=False,
+            headless=True,  # ili ukloni ceo parametar
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--disable-features=IsolateOrigins,site-per-process",
+                "--disable-gpu",  # preporučujem i ovo
             ],
         )
         context = await browser.new_context(
@@ -564,7 +565,7 @@ async def scrape_prodato_async():
         await accept_cookies_if_present(page)
 
         try:
-            await page.wait_for_selector("div.styles__FullPaginationWrapper-sc-e55e181b-0", timeout=5000)
+            await page.wait_for_selector("div.styles__FullPaginationWrapper-sc-e55e181b-0", timeout=15000)
         except Exception:
             print("Nije pronađena paginacija, možda nema oglasa.")
             await save_debug_snapshot(page, 1, "no_pagination")
