@@ -537,7 +537,6 @@ async def scrape_prodato_async():
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-            headless=True,  # ili ukloni ceo parametar
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--disable-features=IsolateOrigins,site-per-process",
