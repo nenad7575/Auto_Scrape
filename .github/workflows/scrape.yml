@@ -56,7 +56,7 @@ jobs:
           git config user.email "nenad7575@gmail.com"
           git add polovni_oglasi.json
           git diff --staged --quiet || git commit -m "Automatsko ažuriranje polovni_oglasi.json [skip ci]"
-          git push https://${ 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 }@github.com/${Auto_Scrape}.git
+          git push https://${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}@github.com/${Auto_Scrape}.git
 
       - name: Show results
         run: |
