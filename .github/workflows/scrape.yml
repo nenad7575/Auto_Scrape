@@ -45,14 +45,6 @@ jobs:
       - name: Commit and push updated JSON
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add polovni_oglasi.json
-          git diff --staged --quiet || git commit -m "Automatsko ažuriranje polovni_oglasi.json [skip ci]"
-          git push
-
-      - name: Commit and push updated JSON
-        run: |
-          git config user.name "github-actions[bot]"
           git config user.email "nenad7575@gmail.com"
           git add polovni_oglasi.json
           git diff --staged --quiet || git commit -m "Automatsko ažuriranje polovni_oglasi.json [skip ci]"
