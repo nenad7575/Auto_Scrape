@@ -39,6 +39,75 @@ def save_json_data(data: Dict, filename: str) -> None:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 
+async def wait_for_any_content(page, timeout_per_selector: int = 6000) -> str:
+    """
+    Čeka da se pojavi BILO KOJI od ključnih elemenata stranice.
+    Vraća: 'pagination' | 'articles' | 'total' | 'nothing'
+
+    Redosled je od najpouzdanijeg ka fallback-u. Koristi `class*=` i
+    `data-testid` da preživi promene hash-a u styled-components klasama.
+    """
+    # (tip, selektor) — prvi koji se pojavi određuje rezultat
+    candidates = [
+        ("pagination", "div[class*='FullPaginationWrapper']"),
+        ("pagination", "ul[class*='ant-pagination']"),
+        ("total",      "small[class*='Show']"),
+        ("articles",   "article[class*='DesktopView']"),
+        ("articles",   "article[data-testid='emptyAd']"),
+        ("articles",   "article"),
+    ]
+
+    for kind, selector in candidates:
+        try:
+            await page.wait_for_selector(selector, timeout=timeout_per_selector)
+            print(f"  [detect] Pronađen: {selector}  →  {kind}")
+            return kind
+        except Exception:
+            continue
+
+    return "nothing"
+
+
+def extract_total_ads_from_html(soup: BeautifulSoup, items_per_page: int) -> int:
+    """
+    Pokušava da iz HTML-a izvuče ukupan broj oglasa. Vraća 0 ako ne uspe.
+    Koristi tri fallback metode po prioritetu.
+    """
+    # 1) <small class="...Show...">Prikazano od 1 do 25 oglasa od ukupno 209</small>
+    total_small = soup.find('small', class_=re.compile(r'Show'))
+    if total_small:
+        match = re.search(r'ukupno\s+(\d+)', total_small.get_text())
+        if match:
+            val = int(match.group(1))
+            print(f"  [total] iz <small>: {val}")
+            return val
+
+    # 2) JSON-LD: "numberOfItems": 24
+    for script in soup.find_all('script', type='application/ld+json'):
+        if not script.string:
+            continue
+        m = re.search(r'"numberOfItems"\s*:\s*(\d+)', script.string)
+        if m:
+            val = int(m.group(1))
+            # JSON-LD numberOfItems je broj na TEKUĆOJ strani, ne ukupno.
+            # Ako nema boljeg izvora, koristimo ga samo kao donju granicu.
+            print(f"  [total] iz JSON-LD (samo tekuća strana): {val}")
+
+    # 3) Iz paginacije: max broj stranice * items_per_page
+    pag_items = soup.find_all('li', class_=re.compile(r'ant-pagination-item-\d'))
+    page_nums = []
+    for li in pag_items:
+        try:
+            page_nums.append(int(li.get_text(strip=True)))
+        except (ValueError, AttributeError):
+            continue
+    if page_nums:
+        val = max(page_nums) * items_per_page
+        print(f"  [total] iz paginacije (max strana {max(page_nums)} × {items_per_page}): ~{val}")
+        return val
+
+    return 0
+
 def update_json_with_sold(json_path: str, prodati_oglasi: List[Dict], today_str: str) -> None:
     """
     Ažurira JSON fajl sa prodatim oglasima.
@@ -537,6 +606,7 @@ async def scrape_prodato_async():
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(
+            headless=False,  # ili ukloni ceo parametar
             args=[
                 "--disable-blink-features=AutomationControlled",
                 "--disable-features=IsolateOrigins,site-per-process",
@@ -563,13 +633,27 @@ async def scrape_prodato_async():
 
         await accept_cookies_if_present(page)
 
-        try:
-            await page.wait_for_selector("div.styles__FullPaginationWrapper-sc-e55e181b-0", timeout=15000)
-        except Exception:
-            print("Nije pronađena paginacija, možda nema oglasa.")
-            await save_debug_snapshot(page, 1, "no_pagination")
-            await browser.close()
-            return []
+        # --- Detekcija sadržaja sa fallback-om ---
+        kind = await wait_for_any_content(page)
+
+        if kind == "nothing":
+            # Poslednji fallback: proveri direktno u HTML-u
+            print("  [fallback] Nijedan selektor nije prošao, proveravam HTML direktno...")
+            html = await page.content()
+            soup_check = BeautifulSoup(html, 'lxml')
+
+            if soup_check.find('article'):
+                print("  [fallback] Ima <article> tagova u HTML-u — nastavljam.")
+                kind = "articles"
+            else:
+                print("Nema oglasa na stranici. Prekidam.")
+                await save_debug_snapshot(page, 1, "no_content_at_all")
+                await browser.close()
+                return []
+
+        if kind == "articles":
+            print("  [fallback] Paginacija nije nađena, ali oglasi jesu. "
+                  "Pretpostavljam 25 oglasa/strani.")
 
         html = await page.content()
         soup = BeautifulSoup(html, 'lxml')
