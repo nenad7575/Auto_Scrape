@@ -49,6 +49,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "nenad7575@gmail.com"
           git add polovni_oglasi.json
+          git add data/slike/SRB/
           git diff --staged --quiet || git commit -m "Automatsko ažuriranje polovni_oglasi.json [skip ci]"
           git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
