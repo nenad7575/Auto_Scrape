@@ -407,11 +407,11 @@ async def save_debug_snapshot(page, page_num: int, reason: str):
         safe_reason = re.sub(r'[^A-Za-z0-9_\-\.]', '_', reason)
         html = await page.content()
         html_path = os.path.join(DEBUG_FOLDER, f"page_{page_num}_{safe_reason}.html")
-        png_path = os.path.join(DEBUG_FOLDER, f"page_{page_num}_{safe_reason}.png")
+        jpg_path = os.path.join(DEBUG_FOLDER, f"page_{page_num}_{safe_reason}.jpg")
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(html)
-        await page.screenshot(path=png_path, full_page=True)
-        print(f"  [DEBUG] Sačuvano: {html_path} i {png_path}")
+        await page.screenshot(path=jpg_path, full_page=True, type="jpeg", quality=80)
+        print(f"  [DEBUG] Sačuvano: {html_path} i {jpg_path}")
     except Exception as e:
         print(f"  [DEBUG] Nisam uspeo da sačuvam debug snapshot: {e}")
 
@@ -546,13 +546,18 @@ async def fetch_ad_detail_data(context, url: str, label: str, ad_id: Optional[st
             print(f"  [{label}] Nisu pronađeni InfoCard podaci na: {url}")
             await save_debug_snapshot(page, 0, f"detail_empty_{label}")
 
-        # Snimanje screenshot-a detaljne stranice
+        # Snimanje screenshot-a detaljne stranice (JPG)
         if ad_id and detail is not None:
             os.makedirs(SCREENSHOT_DIR, exist_ok=True)
-            screenshot_filename = f"ad_{ad_id}.png"
+            screenshot_filename = f"ad_{ad_id}.jpg"
             screenshot_path = os.path.join(SCREENSHOT_DIR, screenshot_filename)
             try:
-                await page.screenshot(path=screenshot_path, full_page=True)
+                await page.screenshot(
+                    path=screenshot_path,
+                    full_page=True,
+                    type="jpeg",
+                    quality=80,   # 0-100; 80 je dobar balans kvalitet/veličina
+                )
                 # Putanja u JSON zapisu sa forward slash-ovima (univerzalno)
                 detail['Slika detaljne stranice'] = f"data/slike/SRB/{screenshot_filename}"
             except Exception as e:
