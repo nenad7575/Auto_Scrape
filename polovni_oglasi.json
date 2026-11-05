@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "poslednje_azuriranje": "2026-11-04 23:24:07",
-    "broj_oglasa": 27823
+    "poslednje_azuriranje": "2026-11-05 04:34:33",
+    "broj_oglasa": 27824
   },
   "oglasi": {
     "29120380": {
@@ -1108182,6 +1108182,51 @@
       "Broj oglasa (potvrda sa stranice)": "30237435",
       "Datum objave": "27.10.2026",
       "Slika detaljne stranice": "data/slike/SRB/ad_30237435.jpg"
+    },
+    "25733459": {
+      "ID oglasa": "25733459",
+      "ID vlasnika": null,
+      "Oglasivac": "OGLAŠIVAČ",
+      "Opis": "2018. Limuzina | Benzin | 1991 cm 3 | 178.920 km | 165kW (224 KS) | Automatski / poluautomatski | 4/5 vrata, 5 sedišta",
+      "Cena": "22.700€",
+      "Datum obnove": null,
+      "URL ka detaljnom oglasu": "https://www.polovniautomobili.com/auto-oglasi/25733459/mercedes-benz-a-250",
+      "Marka": "Mercedes Benz",
+      "Model": "A 250",
+      "URL glavne slike": "https://cdn.polovniautomobili.com/user-images/thumbs/2573/25733459/0f2231be4c0c-370x278.jpg",
+      "Sve slike": [],
+      "Godina proizvodnje": "2018",
+      "Kilometraža": "178.920 km",
+      "Vrsta goriva": "Benzin",
+      "Menjač": "Automatski / poluautomatski",
+      "Zapremina motora": "1991",
+      "Snaga motora (kW)": "165",
+      "Snaga motora (KS)": "224",
+      "Lokacija": "Prigrevica",
+      "Badgevi": "Na ime kupca",
+      "Tip oglašivača": "agencija",
+      "Stara cena / popust": null,
+      "Karoserija": "Limuzina",
+      "Datum skrejpa": "05.11.2026",
+      "Datum prodaje": "05.11.2026",
+      "Stanje": "Polovno vozilo",
+      "Fiksna cena": "NE",
+      "Zamena": "NE",
+      "Emisiona klasa motora": "Euro 6",
+      "Pogon": "Prednji",
+      "Broj vrata": "4/5 vrata",
+      "Broj sedišta": "5 sedišta",
+      "Strana volana": "Levi volan",
+      "Klima": "Automatska klima",
+      "Boja": "Crvena",
+      "Materijal enterijera": "Štof",
+      "Boja enterijera": "Crna",
+      "Registrovan do": "Nije registrovan",
+      "Poreklo vozila": "Na ime kupca",
+      "Oštećenje": "Nije oštećen",
+      "Broj oglasa (potvrda sa stranice)": "25733459",
+      "Datum objave": "03.11.2026",
+      "Slika detaljne stranice": "data/slike/SRB/ad_25733459.jpg"
     }
   }
 }
